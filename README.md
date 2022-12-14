@@ -22,5 +22,7 @@ O assistente de voz é a segunda interface de interação entre usuário e a cas
 
 O assistente chamado Guilherme é ativado assim que for chamado por alguém. Primeiramente ao ser chamado o Guilherme responde por meio dos alto-falantes que devem estar distribuídos pela casa, e ele responde perguntando de que forma ele pode ajudar. Com isso é ativado um temporizador de 7 segundos de duração que espera o usuário dar as ordens para ele distribuir as ações em uma árvore de funções que foi criada manualmente para melhor atender às necessidades do seu dono. Com isso há a possibilidade de fazer qualquer pedido igualmente é feito via aplicativo, mas a diferença principal além do meio ser a voz é que ele te responde.
 ## Node red e Tasmota
+O Node Red foi a principal ferramenta utilizada neste processo, pois foi onde toda a programação e toda a lógica está embutida.
 
+O Tasmota foi a ferramenta que mais auxiliou na configuração dos periféricos através dos Esp32.
 
