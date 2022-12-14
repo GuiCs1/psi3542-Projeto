@@ -1,0 +1,644 @@
+[
+    {
+        "id": "1041af1991e5304f",
+        "type": "tab",
+        "label": "Trabalho",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "832d88912893dd14",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "Cozinha",
+        "topic": "cmnd/tasmotateste/cozinha/LedPower",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f8b8eec42e9fceb",
+        "x": 1700,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "8e3a55add21ddaae",
+        "type": "watson-text-to-speech",
+        "z": "1041af1991e5304f",
+        "name": "TTS Out",
+        "lang": "pt-BR",
+        "langhidden": "pt-BR",
+        "langcustom": "NoCustomisationSetting",
+        "langcustomhidden": "",
+        "voice": "pt-BR_IsabelaV3Voice",
+        "voicehidden": "",
+        "format": "audio/wav",
+        "password": "",
+        "apikey": "30AsE43kKuvRh4qP1dyVOqlXesmMtD--hBM3lW8tp9sY",
+        "payload-response": false,
+        "service-endpoint": "https://api.us-south.text-to-speech.watson.cloud.ibm.com/instances/2313d70a-580a-4270-aad4-5034722c6c80",
+        "x": 1320,
+        "y": 40,
+        "wires": [
+            [
+                "1d4e4776feecb56d"
+            ]
+        ]
+    },
+    {
+        "id": "7e193ee418614f12",
+        "type": "watson-speech-to-text",
+        "z": "1041af1991e5304f",
+        "name": "STT WakeWord",
+        "alternatives": 1,
+        "speakerlabels": true,
+        "smartformatting": false,
+        "lang": "pt-BR",
+        "langhidden": "pt-BR",
+        "langcustom": "NoCustomisationSetting",
+        "langcustomhidden": "",
+        "custom-weight": "0.5",
+        "band": "BroadbandModel",
+        "bandhidden": "",
+        "keywords": "",
+        "keywords-threshold": "0.5",
+        "word-confidence": false,
+        "password": "",
+        "apikey": "Ih6NGMd_kWVJzjwIsdKn27VwU0wiQg0lmhbrUJcg5q-m",
+        "payload-response": false,
+        "streaming-mode": false,
+        "streaming-mute": true,
+        "auto-connect": false,
+        "discard-listening": false,
+        "disable-precheck": false,
+        "service-endpoint": "https://api.au-syd.speech-to-text.watson.cloud.ibm.com/instances/1b640e3c-6f42-43d2-a6fa-311980a53ea5",
+        "x": 380,
+        "y": 140,
+        "wires": [
+            [
+                "143b7acd343d4618"
+            ]
+        ]
+    },
+    {
+        "id": "1d4e4776feecb56d",
+        "type": "sox-play",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "outputDevice": "default",
+        "manualOutput": "",
+        "gain": "100",
+        "startNew": "skip",
+        "playStream": false,
+        "inputEncoding": "signed-integer",
+        "inputChannels": 1,
+        "inputRate": 16000,
+        "inputBits": 16,
+        "debugOutput": false,
+        "x": 1580,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "24bdf0cc09c48189",
+        "type": "sox-record",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "buttonStart": "button",
+        "inputs": 0,
+        "inputSource": "default",
+        "manualSource": "",
+        "inputEncoding": "signed-integer",
+        "inputChannels": 1,
+        "inputRate": 16000,
+        "inputBits": 16,
+        "byteOrder": "-L",
+        "encoding": "signed-integer",
+        "channels": 1,
+        "rate": 16000,
+        "bits": 16,
+        "gain": "0",
+        "buffer": "4096",
+        "showDuration": false,
+        "durationType": "forever",
+        "durationLength": "0",
+        "silenceDetection": "nothing",
+        "silenceDuration": "2.0",
+        "silenceThreshold": "2.0",
+        "outputFormat": "wav",
+        "manualPath": "",
+        "debugOutput": false,
+        "x": 250,
+        "y": 260,
+        "wires": [
+            [
+                "7e193ee418614f12"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "143b7acd343d4618",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "WakeWord",
+        "func": "if (msg.transcription.indexOf(\"guilherme\") != -1) {\n\n    let message = `Olá, o que você gostaria?`;\n    msg.payload = message;\n\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 60,
+        "wires": [
+            [
+                "49b1cc1ad23c5242",
+                "8e3a55add21ddaae"
+            ]
+        ]
+    },
+    {
+        "id": "ae5754fd81f33b8a",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "Ligar a Luz",
+        "func": "if ((msg.payload[0]==1) && (msg.payload[2]== 1)){\n\n    if(msg.payload[1]==1){\n\n        msg.payload = 1;\n        let message = `Luzes da Sala Ligadas`;\n        msg.transcription = message; \n        return [msg, null, message];\n\n    }else  {\n    \n        msg.payload = 0;\n        let message = `Luzes da Sala desligadas`;\n        msg.transcription = message;\n        return [msg, null, message];\n    }\n}\n\nelse if ((msg.payload[0] == 1) && (msg.payload[2] == 3)) {\n\n    if (msg.payload[1] == 1) {\n\n        msg.payload = 1;\n        let message = `Luzes da Cozinha Ligadas`;\n        msg.transcription = message;\n        return [null, msg, message];\n\n    } else {\n\n        msg.payload = 0;\n        let message = `Luzes da Cozinha Desligadas`;\n        msg.transcription = message;\n        return [null, msg, message];\n    }\n}\n\n",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1010,
+        "y": 220,
+        "wires": [
+            [
+                "49fa72ac3a413bc2"
+            ],
+            [
+                "832d88912893dd14"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "0a05cc3d520d94bf",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "Trava de Portas",
+        "func": "if ((msg.payload[0] == 2) && (msg.payload[2] == 1)) {\n\n    if (msg.payload[1] == 1) {\n\n        msg.payload = 1;\n        let message = `Luzes da Sala Ligadas`;\n        msg.transcription = message;\n        return [msg, null];\n\n    } else {\n\n        msg.payload = 0;\n        let message = `Luzes da Sala desligadas`;\n        msg.transcription = message;\n        return [msg, null];\n    }\n}\n\nif ((msg.payload[0] == 2) && (msg.payload[2] == 3)) {\n\n    if (msg.payload[1] == 1) {\n\n        msg.payload = 1;\n        let message = `Luzes da Cozinha Ligadas`;\n        msg.transcription = message;\n        return [null, msg];\n\n    } else {\n\n        msg.payload = 0;\n        let message = `Luzes da Cozinha Desligadas`;\n        msg.transcription = message;\n        return [null, msg];\n    }\n}",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1020,
+        "y": 300,
+        "wires": [
+            [
+                "98b97b1cbc34cfed"
+            ],
+            [
+                "706ea8f01b784659"
+            ]
+        ]
+    },
+    {
+        "id": "5023d4e35312b311",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "Intenção",
+        "func": "\n\nif ((msg.transcription.indexOf(\"desligar\") != -1) && (msg.transcription.indexOf(\"luz\") != -1) ) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [1, 0, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [1, 0, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [1, 0, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [1, 0, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [1, 0, 5];\n\n    }\n\nreturn msg;\n\n}\n\nelse if ((msg.transcription.indexOf(\"ligar\") != -1) && (msg.transcription.indexOf(\"luz\") != -1)) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [1, 1, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [1, 1, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [1, 1, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [1, 1, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [1, 1, 5];\n\n    }\n\n    return msg;\n\n}\n\nelse if ((msg.transcription.indexOf(\"abrir\") != -1) && (msg.transcription.indexOf(\"porta\") != -1)) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [2, 1, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [2, 1, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [2, 1, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [2, 1, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [2, 1, 5];\n\n    }\n\n    return msg;\n\n}\n\nelse if ((msg.transcription.indexOf(\"fechar\") != -1) && (msg.transcription.indexOf(\"porta\") != -1)) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [2, 0, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [2, 0, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [2, 0, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [2, 0, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [2, 0, 5];\n\n    }\n\n    return msg;\n\n}\n\nelse if ((msg.transcription.indexOf(\"desativar\") != -1) && (msg.transcription.indexOf(\"alarme de movimento\") != -1)) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [3, 0, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [3, 0, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [3, 0, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [3, 0, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [3, 0, 5];\n\n    }\n\n    return msg;\n\n}\n\nelse if ((msg.transcription.indexOf(\"ativar\") != -1) && (msg.transcription.indexOf(\"alarme de movimento\") != -1)) {\n\n    if (msg.transcription.indexOf(\"sala\") != -1) {\n\n        msg.payload = [3, 1, 1];\n\n    }\n    if (msg.transcription.indexOf(\"quarto\") != -1) {\n\n        msg.payload = [3, 1, 2];\n\n    }\n    if (msg.transcription.indexOf(\"cozinha\") != -1) {\n\n        msg.payload = [3, 1, 3];\n\n    }\n    if (msg.transcription.indexOf(\"area de serviço\") != -1) {\n\n        msg.payload = [3, 1, 4];\n\n    }\n    if (msg.transcription.indexOf(\"garagem\") != -1) {\n\n        msg.payload = [3, 1, 5];\n\n    }\n\n    return msg;\n\n}\n\n\n\n\nreturn [500,722, 404];\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 760,
+        "y": 260,
+        "wires": [
+            [
+                "ae5754fd81f33b8a",
+                "84b3d63a7335b433",
+                "0a05cc3d520d94bf"
+            ]
+        ]
+    },
+    {
+        "id": "57eb5cb1587cec4c",
+        "type": "watson-speech-to-text",
+        "z": "1041af1991e5304f",
+        "name": "STT Intention",
+        "alternatives": 1,
+        "speakerlabels": true,
+        "smartformatting": false,
+        "lang": "pt-BR",
+        "langhidden": "pt-BR",
+        "langcustom": "NoCustomisationSetting",
+        "langcustomhidden": "",
+        "custom-weight": "0.5",
+        "band": "BroadbandModel",
+        "bandhidden": "",
+        "keywords": "",
+        "keywords-threshold": "0.5",
+        "word-confidence": false,
+        "password": "",
+        "apikey": "Ih6NGMd_kWVJzjwIsdKn27VwU0wiQg0lmhbrUJcg5q-m",
+        "payload-response": false,
+        "streaming-mode": false,
+        "streaming-mute": true,
+        "auto-connect": false,
+        "discard-listening": false,
+        "disable-precheck": false,
+        "service-endpoint": "https://api.au-syd.speech-to-text.watson.cloud.ibm.com/instances/1b640e3c-6f42-43d2-a6fa-311980a53ea5",
+        "x": 560,
+        "y": 240,
+        "wires": [
+            [
+                "5023d4e35312b311"
+            ]
+        ]
+    },
+    {
+        "id": "84b3d63a7335b433",
+        "type": "sox-record",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "buttonStart": "msg",
+        "inputs": 1,
+        "inputSource": "2,0",
+        "manualSource": "",
+        "inputEncoding": "signed-integer",
+        "inputChannels": 1,
+        "inputRate": 16000,
+        "inputBits": 16,
+        "byteOrder": "-L",
+        "encoding": "signed-integer",
+        "channels": 1,
+        "rate": 16000,
+        "bits": 16,
+        "gain": "0",
+        "buffer": "4096",
+        "showDuration": false,
+        "durationType": "forever",
+        "durationLength": "0",
+        "silenceDetection": "nothing",
+        "silenceDuration": "2.0",
+        "silenceThreshold": "2.0",
+        "outputFormat": "wav",
+        "manualPath": "",
+        "debugOutput": false,
+        "x": 870,
+        "y": 140,
+        "wires": [
+            [
+                "57eb5cb1587cec4c"
+            ],
+            []
+        ]
+    },
+    {
+        "id": "49fa72ac3a413bc2",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "Sala",
+        "topic": "cmnd/tasmotateste/sala/LedPower",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f8b8eec42e9fceb",
+        "x": 1610,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "49b1cc1ad23c5242",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "function 5",
+        "func": "if (msg.payload == `Olá, o que você gostaria?`){\n\n    msg.payload= \"start\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 120,
+        "wires": [
+            [
+                "84b3d63a7335b433",
+                "7f121ee95dd3b5db"
+            ]
+        ]
+    },
+    {
+        "id": "93a1fc62ec1fae41",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "function 6",
+        "func": "if (msg.payload == \"start\") {\n\n\n    msg.payload = \"stop\"\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 960,
+        "y": 80,
+        "wires": [
+            [
+                "84b3d63a7335b433"
+            ]
+        ]
+    },
+    {
+        "id": "7f121ee95dd3b5db",
+        "type": "delay",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 800,
+        "y": 80,
+        "wires": [
+            [
+                "93a1fc62ec1fae41"
+            ]
+        ]
+    },
+    {
+        "id": "98b97b1cbc34cfed",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "Sala",
+        "topic": "cmnd/tasmotateste/sala/Power",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f8b8eec42e9fceb",
+        "x": 1730,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "706ea8f01b784659",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "Cozinha",
+        "topic": "cmnd/tasmotateste/cozinha/Power",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f8b8eec42e9fceb",
+        "x": 1860,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "dbff2ac04fbafdbb",
+        "type": "mqtt in",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "topic": "testeguilherme",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "693ef55d458128dc",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 340,
+        "y": 440,
+        "wires": [
+            [
+                "714b80bf8528551c"
+            ]
+        ]
+    },
+    {
+        "id": "714b80bf8528551c",
+        "type": "change",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload",
+                "pt": "msg",
+                "to": "msg.transcription",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 550,
+        "y": 400,
+        "wires": [
+            [
+                "5023d4e35312b311"
+            ]
+        ]
+    },
+    {
+        "id": "c41758b6ce3c22a3",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "topic": "ppmguilhermes",
+        "qos": "0",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "693ef55d458128dc",
+        "x": 1380,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "47924f0ee007dc8f",
+        "type": "mqtt in",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "topic": "tele/tasmotateste/cozinha/SENSOR",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "4f8b8eec42e9fceb",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 940,
+        "y": 600,
+        "wires": [
+            [
+                "0fe53f874705dc04",
+                "01b8f5e4720347af"
+            ]
+        ]
+    },
+    {
+        "id": "0fe53f874705dc04",
+        "type": "function",
+        "z": "1041af1991e5304f",
+        "name": "Disparo Alarme Fogo",
+        "func": "if ((msg.payload.ANALOG.MQ2_1 > 300)) {\n    msg.payload= \"10,10,5\";\n\n    return msg\n \n}\nreturn 0;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1260,
+        "y": 600,
+        "wires": [
+            [
+                "54c3cfc30ce3636b"
+            ]
+        ]
+    },
+    {
+        "id": "54c3cfc30ce3636b",
+        "type": "mqtt out",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "topic": "cmnd/tasmotateste/cozinha/Buzzer",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "4f8b8eec42e9fceb",
+        "x": 1620,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "01b8f5e4720347af",
+        "type": "change",
+        "z": "1041af1991e5304f",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.ANALOG.MQ2_1",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1170,
+        "y": 900,
+        "wires": [
+            [
+                "c41758b6ce3c22a3"
+            ]
+        ]
+    },
+    {
+        "id": "4f8b8eec42e9fceb",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "3d990f08f61442f2baac7e6de7a2d627.s2.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "9b8735afe31f7b5d",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "693ef55d458128dc",
+        "type": "mqtt-broker",
+        "name": "BrokerApp",
+        "broker": "52.58.186.91",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "9b8735afe31f7b5d",
+        "type": "tls-config",
+        "name": "",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "",
+        "keyname": "",
+        "caname": "",
+        "servername": "",
+        "verifyservercert": true,
+        "alpnprotocol": ""
+    }
+]
